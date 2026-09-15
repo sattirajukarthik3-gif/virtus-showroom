@@ -9,7 +9,8 @@
     "preview": "vite preview --port 5173",
     "model:optimize": "node scripts/optimize-model.mjs",
     "model:inspect": "node scripts/inspect-model.mjs",
-    "build:artifact": "node scripts/wrap-model-json.mjs && VITE_MODEL_URL=models/virtus.json vite build --outDir dist-artifact"
+    "build:artifact": "node scripts/wrap-model-json.mjs && VITE_MODEL_URL=models/virtus.json vite build --outDir dist-artifact",
+    "model:holo": "node scripts/make-holo.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",

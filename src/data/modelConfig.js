@@ -1,7 +1,20 @@
 /* Tuned for "2022 Volkswagen Virtus GT" by BHP3D (Sketchfab, CC BY 4.0).
    Node names are tested in order against `match` (first hit wins); material names against `materialMatch`. */
+/* Rigged crank/rod/piston assembly by david.gnzlv (Sketchfab, CC BY 4.0). Crank axis runs along +X in the file; pistons move along +Y.
+   Scaled so the bore spacing (2.25 units) becomes 82 mm, which gives a 74 mm piston — a 1.5-litre four. */
+export const ENGINE = {
+  url: (import.meta.env.VITE_MODEL_URL || 'models/virtus.glb').replace(/virtus\.(glb|json)$/, 'engine.$1'),
+  credit: { title: 'Rigged 4-Cylinder Engine (FREE)', author: 'david.gnzlv', url: 'https://sketchfab.com/3d-models/rigged-4-cylinder-engine-free-e14ebe68273d49a3becda6802270b4b0', license: 'CC BY 4.0' },
+  scale: 0.082 / 2.25,
+  rotation: [0, Math.PI / 2, 0],      // crank axis X → engine-local Z (transverse)
+  crankCentre: [2.78, -2.92, 0],      // file units; lands on the procedural crank position
+  crankLocal: [0, -0.06, 0],          // engine-local position of the crank axis
+  animSpeed: [0.25, 3.0],             // playback rate at idle / full rpm
+};
+
 export const MODEL = {
   url: import.meta.env.VITE_MODEL_URL || 'models/virtus.glb',   // a .json URL is a base64-wrapped GLB (used where binary files can't be served)
+  holoUrl: (import.meta.env.VITE_MODEL_URL || 'models/virtus.glb').replace(/virtus\.(glb|json)$/, 'virtus.holo.$1'),   // decimated copy used for the wireframe hologram
   credit: { title: '2022 Volkswagen Virtus GT', author: 'BHP3D', url: 'https://sketchfab.com/3d-models/2022-volkswagen-virtus-gt-3955e5c050f843398b49b2b21ab2f232', license: 'CC BY 4.0' },
   rotation: [0, -Math.PI / 2, 0],  // model nose is -Z → our +X; model +X (driver side, RHD) → our +Z
   scale: 1,

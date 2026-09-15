@@ -34,11 +34,12 @@ function materialKind(m, partKey) {
 
 /** Building moves meshes out of gltf.scene, so it can only happen once per loaded model — later calls get the cached result. */
 const built = new WeakMap();
-export function buildShellFromGLTF(gltf, api) {
+export function buildShellFromGLTF(gltf, api, holoGltf) {
   if (built.has(gltf)) return built.get(gltf);
-  const result = buildShellOnce(gltf, api); built.set(gltf, result); return result;
+  const result = buildShellOnce(gltf, api, holoGltf); built.set(gltf, result); return result;
 }
-function buildShellOnce(gltf, api) {
+function buildShellOnce(gltf, api, holoGltf) {
+  const holoGeo = new Map(); if (holoGltf) holoGltf.scene.traverse(o => { if (o.isMesh) holoGeo.set(o.name, o.geometry); });
   const root = new THREE.Group(); const src = gltf.scene;
   src.rotation.set(MODEL.rotation[0], MODEL.rotation[1], MODEL.rotation[2]); src.updateMatrixWorld(true);
   const bb = new THREE.Box3().setFromObject(src); const size = bb.getSize(new THREE.Vector3());
@@ -88,6 +89,6 @@ function buildShellOnce(gltf, api) {
   const keyOf = { Body: 'body', Glass: 'glass', Hood: 'hood', Doors: 'door', Light: 'light', Grille: 'grille', Rear: 'rear', 'Front wheel': 'wheel', 'Rear wheel': 'wheel', Interior: 'interior', 'Steering wheel': 'interior' };
   parts.forEach(pt => pt.key = keyOf[pt.name] || 'body'); cabinParts.forEach(pt => pt.key = 'interior');
   /* hologram wireframe clones (desktop only — the mesh is heavy) */
-  if (!MODEL.skipWireframe) parts.forEach(pt => pt.obj.traverse(o => { if (o.isMesh && !o.userData.holo) { const w = new THREE.Mesh(o.geometry, holoMat.clone()); w.userData.holo = true; w.userData.holoScale = 0.22; o.add(w); pt.edges.push(w); } }));
+  if (!MODEL.skipWireframe) parts.forEach(pt => pt.obj.traverse(o => { if (o.isMesh && !o.userData.holo) { const w = new THREE.Mesh(holoGeo.get(o.name) || o.geometry, holoMat.clone()); w.userData.holo = true; w.userData.holoScale = holoGeo.has(o.name) ? 0.34 : 0.22; o.add(w); pt.edges.push(w); } }));
   return { root, parts, cabinParts, steerParts, wheelSpins, lampMats, tailMats };
 }
