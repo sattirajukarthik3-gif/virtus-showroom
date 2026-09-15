@@ -44,8 +44,7 @@ export function createShowroom({ isMobile = false } = {}) {
     set(a, op, edge) {
       this.obj.position.copy(this.home).addScaledVector(this.off, 1 - a);
       const o = op * a; this.obj.visible = o > 0.003;
-      const shell = this.group === 'shell';
-      for (let i = 0; i < this.mats.length; i++) { const mt = this.mats[i]; mt.opacity = this.base[i] * o; if (shell && !mt.userData.noDepthToggle) mt.depthWrite = mt.opacity > 0.5; }
+      for (let i = 0; i < this.mats.length; i++) { const mt = this.mats[i]; mt.opacity = this.base[i] * o; if (!mt.userData.noDepthToggle) mt.depthWrite = mt.opacity > 0.5; }
       for (const e of this.edges) { const eo = edge * a * (e.userData.holoScale || 1); e.visible = eo > 0.01; e.material.opacity = eo; }
     }
   }
@@ -323,6 +322,7 @@ export function createShowroom({ isMobile = false } = {}) {
     const doorMul = 1 - smooth(Math.abs(camera.position.z), 0.72, 0.95); for (const m of doorPanelMats) m.opacity *= doorMul;
     /* engine */
     casingMats.forEach(m => m.opacity *= 1 - 0.94 * cut); shroudMats.forEach(m => m.opacity *= 1 - 0.8 * cut); internalMats.forEach(m => m.opacity *= cut);
+    for (const m of casingMats) m.depthWrite = m.opacity > 0.5; for (const m of shroudMats) m.depthWrite = m.opacity > 0.5; for (const m of internalMats) m.depthWrite = m.opacity > 0.5;
     casingEdges.forEach(e => { if (cut > 0.02) { e.visible = true; e.material.opacity = Math.max(e.material.opacity, cut * 0.8 * mech * fade); } });
     anim.crankA += dt * (4 + rpm * 40); const ph = [0, Math.PI, Math.PI, 0];
     pistons.forEach((pm, i) => { const a = anim.crankA + ph[i]; const pinY = -0.06 + 0.035 * Math.cos(a), pinX = 0.035 * Math.sin(a); pm.position.y = 0.10 + 0.035 * Math.cos(a);
@@ -333,7 +333,7 @@ export function createShowroom({ isMobile = false } = {}) {
     const gearChanged = g !== anim.lastGear; anim.lastGear = g; anim.gearA += dt * (1 + rpm * 6);
     gearMeshes.forEach(([ga, gb], i) => { const [ra, rb] = gearR[i]; ga.rotation.z = anim.gearA; gb.rotation.z = -anim.gearA * ra / rb + Math.PI / Math.round(rb * 160); const on = i === g - 1; ga.material.emissive.setHex(on ? 0x3d7bff : 0); gb.material.emissive.setHex(on ? 0x3d7bff : 0); ga.material.emissiveIntensity = gb.material.emissiveIntensity = on ? 0.9 : 0; });
     clutchA.material.emissive.setHex(g % 2 === 1 ? 0x3d7bff : 0); clutchA.material.emissiveIntensity = 0.8; clutchB.material.emissive.setHex(g > 0 && g % 2 === 0 ? 0x3d7bff : 0); clutchB.material.emissiveIntensity = 0.8;
-    trCase.material.opacity *= 1 - 0.94 * transCut; trInternals.forEach(m => m.opacity *= transCut); if (transCut > 0.02) { trCaseEdge.visible = true; trCaseEdge.material.opacity = Math.max(trCaseEdge.material.opacity, transCut * 0.8 * mech * fade); }
+    trCase.material.opacity *= 1 - 0.94 * transCut; trInternals.forEach(m => m.opacity *= transCut); trCase.material.depthWrite = trCase.material.opacity > 0.5; trInternals.forEach(m => m.depthWrite = m.opacity > 0.5); if (transCut > 0.02) { trCaseEdge.visible = true; trCaseEdge.material.opacity = Math.max(trCaseEdge.material.opacity, transCut * 0.8 * mech * fade); }
     /* power flow */
     flowLine.material.opacity = flowOn * 0.45; flowPts.material.opacity = flowOn;
     if (flowOn > 0.01) { const arr = fGeo.attributes.position.array; for (let i = 0; i < FN; i++) { let u = flow * 1.15 - (i / FN) * 0.4 + 0.01 * Math.sin(t * 4 + i); const right = i % 2 === 1; let pnt;

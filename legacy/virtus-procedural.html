@@ -703,7 +703,7 @@ function paintInfo(t,on){const {g,c}=infoS;const W=c.width,H=c.height;g.fillStyl
   g.globalAlpha=1;infoS.t.needsUpdate=true;}
 
 /* ---------- registries built after construction ---------- */
-Part.prototype.set=function(a,op,edge){this.obj.position.copy(this.home).addScaledVector(this.off,1-a);const o=op*a;this.obj.visible=o>0.003;for(let i=0;i<this.mats.length;i++){const mt=this.mats[i];mt.opacity=this.base[i]*o;if(this.group==='shell')mt.depthWrite=mt.opacity>0.5;}for(const e of this.edges){const eo=edge*a;e.visible=eo>0.01;e.material.opacity=eo;}};
+Part.prototype.set=function(a,op,edge){this.obj.position.copy(this.home).addScaledVector(this.off,1-a);const o=op*a;this.obj.visible=o>0.003;for(let i=0;i<this.mats.length;i++){const mt=this.mats[i];mt.opacity=this.base[i]*o;mt.depthWrite=mt.opacity>0.5;}for(const e of this.edges){const eo=edge*a;e.visible=eo>0.01;e.material.opacity=eo;}};
 const keyOf={Body:'body',Glass:'glass',Hood:'hood','Front door':'door','Rear door':'door',Mirrors:'door','LED headlights':'light',Grille:'grille',Rear:'rear','Front wheel':'wheel','Rear wheel':'wheel',Suspension:'susp',Exhaust:'susp',Engine:'engine',Transmission:'trans',Driveshafts:'susp',Interior:'interior'};
 parts.forEach(pt=>pt.key=keyOf[pt.name]);
 const pickMeshes=[]; car.traverse(o=>{if(o.isMesh&&o.userData.part)pickMeshes.push(o);});
@@ -875,7 +875,7 @@ function frameLoop(now){requestAnimationFrame(frameLoop);
     else pt.set(a,intVis*fade,edge*0.5*fade);}
   for(const m of doorPanelMats)m.opacity*=doorMul;
   /* engine cutaway + animation */
-  casingMatsLive.forEach(m=>m.opacity*=1-0.94*cut); shroudMats.forEach(m=>m.opacity*=1-0.8*cut); internalMats.forEach(m=>m.opacity*=cut); casingEdges.forEach(e=>{if(cut>0.02){e.visible=true;e.material.opacity=Math.max(e.material.opacity,cut*0.8*mech*fade);}});
+  casingMatsLive.forEach(m=>m.opacity*=1-0.94*cut); shroudMats.forEach(m=>m.opacity*=1-0.8*cut); internalMats.forEach(m=>m.opacity*=cut); [...casingMatsLive,...shroudMats,...internalMats].forEach(m=>m.depthWrite=m.opacity>0.5); casingEdges.forEach(e=>{if(cut>0.02){e.visible=true;e.material.opacity=Math.max(e.material.opacity,cut*0.8*mech*fade);}});
   crankA+=dt*(4+rpm*40); const ph=[0,Math.PI,Math.PI,0];
   pistons.forEach((pm,i)=>{const a=crankA+ph[i];const pinY=-0.06+0.035*Math.cos(a),pinX=0.035*Math.sin(a);pm.position.y=0.10+0.035*Math.cos(a);
     const r=rods[i];const dx=0-pinX,dy=(pm.position.y-0.03)-pinY;const len=Math.hypot(dx,dy);r.position.set(pinX+dx/2,pinY+dy/2,EZ[i]);r.rotation.z=-Math.atan2(dx,dy);r.scale.y=len/0.16;throws[i].rotation.z=a;});
@@ -886,7 +886,7 @@ function frameLoop(now){requestAnimationFrame(frameLoop);
   gearA+=dt*(1+rpm*6);
   gearMeshes.forEach(([ga,gb],i)=>{const [ra,rb]=gearR[i];ga.rotation.z=gearA;gb.rotation.z=-gearA*ra/rb+Math.PI/Math.round(rb*160);const on=i===g-1;ga.material.emissive.setHex(on?0x3d7bff:0);gb.material.emissive.setHex(on?0x3d7bff:0);ga.material.emissiveIntensity=gb.material.emissiveIntensity=on?0.9:0;});
   clutchA.material.emissive.setHex(g%2===1?0x3d7bff:0); clutchA.material.emissiveIntensity=0.8; clutchB.material.emissive.setHex(g>0&&g%2===0?0x3d7bff:0); clutchB.material.emissiveIntensity=0.8;
-  trCase.material.opacity*=1-0.94*transCut; trInternals.forEach(m=>m.opacity*=transCut); const tce=trCase.children.find(x=>x.isLineSegments); if(transCut>0.02){tce.visible=true;tce.material.opacity=Math.max(tce.material.opacity,transCut*0.8*mech*fade);}
+  trCase.material.opacity*=1-0.94*transCut; trInternals.forEach(m=>m.opacity*=transCut); trCase.material.depthWrite=trCase.material.opacity>0.5; trInternals.forEach(m=>m.depthWrite=m.opacity>0.5); const tce=trCase.children.find(x=>x.isLineSegments); if(transCut>0.02){tce.visible=true;tce.material.opacity=Math.max(tce.material.opacity,transCut*0.8*mech*fade);}
   /* power flow */
   flowLine.material.opacity=flowOn*0.45; flowPts.material.opacity=flowOn;
   if(flowOn>0.01){const arr=fGeo.attributes.position.array;for(let i=0;i<FN;i++){let u=flow*1.15-(i/FN)*0.4+0.01*Math.sin(t*4+i);const right=i%2===1;let pnt;
