@@ -114,11 +114,11 @@ export function createShowroom({ isMobile = false } = {}) {
   });
 
   /* ================= mechanical ================= */
-  const discs = [], springs = [], calipers = [];
+  const discs = [], springs = [], calipers = [], frontDampers = [];
   const suspG = new THREE.Group(); car.add(suspG);
   [[WX, TR], [WX, -TR]].forEach(([x, z]) => { const s = z > 0 ? 1 : -1;
     const sp = helix(0.065, 0.26, 6, x, 0.5, z - s * 0.18); suspG.add(sp); springs.push(sp);
-    suspG.add(cyl(0.03, 0.03, 0.42, mat.alu, 12, x, 0.55, z - s * 0.18)); suspG.add(box(0.08, 0.03, 0.5, mat.cast, x - 0.05, 0.3, z - s * 0.32));
+    const dmp = cyl(0.03, 0.03, 0.42, mat.alu, 12, x, 0.55, z - s * 0.18); suspG.add(dmp); frontDampers.push(dmp); suspG.add(box(0.08, 0.03, 0.5, mat.cast, x - 0.05, 0.3, z - s * 0.32));
     const disc = cyl(0.145, 0.145, 0.025, mat.steel, 40, x, WR, z - s * 0.13); disc.rotation.order = 'ZYX'; disc.rotation.set(Math.PI / 2, 0, 0); suspG.add(disc); discs.push(disc);
     const cal = box(0.08, 0.14, 0.05, mat.paintDark, x - 0.1, WR + 0.06, z - s * 0.13); suspG.add(cal); calipers.push(cal); });
   [[-WX, TR], [-WX, -TR]].forEach(([x, z]) => { const s = z > 0 ? 1 : -1;
@@ -131,7 +131,7 @@ export function createShowroom({ isMobile = false } = {}) {
   new Part('Suspension', suspG, V3(0, -1.2, 0), 'mech');
   const exG = new THREE.Group();
   exG.add(tube([V3(1.25, 0.5, 0.25), V3(1.15, 0.35, 0.25), V3(0.9, 0.22, 0.35), V3(-1.6, 0.22, 0.35), V3(-2.0, 0.26, 0.5), V3(-2.28, 0.28, 0.55)], 0.03, mat.steel, 80));
-  exG.add(box(0.7, 0.14, 0.28, mat.alu, -1.7, 0.25, 0.4)); exG.add(box(0.28, 0.16, 0.14, mat.alu, 0.6, 0.24, 0.35));
+  const mufflerBox = box(0.7, 0.14, 0.28, mat.alu, -1.7, 0.25, 0.4); exG.add(mufflerBox); exG.add(box(0.28, 0.16, 0.14, mat.alu, 0.6, 0.24, 0.35));
   car.add(exG); new Part('Exhaust', exG, V3(0, -0.9, 0), 'mech');
 
   /* engine */
@@ -336,6 +336,13 @@ export function createShowroom({ isMobile = false } = {}) {
     impeller.rotation.z -= dt * (5 + rpm * 90); turbine2.rotation.z -= dt * (5 + rpm * 90); fan.rotation.x += dt * (2 + rpm * 20);
     /* transmission */
     const gearChanged = g !== anim.lastGear; anim.lastGear = g; anim.gearA += dt * (1 + rpm * 6);
+    if (api.partModels) { const pm = api.partModels; const o = mech * fade;
+      if (pm.turboMats) pm.turboMats.forEach(m => { m.opacity = o; m.depthWrite = o > 0.5; });
+      const wTurbo = dt * (5 + rpm * 90), wGear = dt * (1 + rpm * 6);
+      pm.spin.forEach(p => { p.rotation[p.userData.axis] += (p.userData.dir || 1) * (p.userData.turbo ? wTurbo : wGear); });
+      const cur = g > 5 ? 5 : g; pm.gears.forEach(gr => { const on = gr.n === cur; gr.mesh.material.emissive.setHex(on ? 0x3d7bff : 0); gr.mesh.material.emissiveIntensity = on ? 0.9 : 0; });
+      pm.rotorPivots.forEach(p => p.rotation[p.userData.axis || 'z'] = anim.wheelA);
+      pm.springs.forEach((p, i) => { p.scale.y = 1 - 0.2 * susp * (0.5 + 0.5 * Math.sin(t * 2.6 + i * 1.4)); }); }
     gearMeshes.forEach(([ga, gb], i) => { const [ra, rb] = gearR[i]; ga.rotation.z = anim.gearA; gb.rotation.z = -anim.gearA * ra / rb + Math.PI / Math.round(rb * 160); const on = i === g - 1; ga.material.emissive.setHex(on ? 0x3d7bff : 0); gb.material.emissive.setHex(on ? 0x3d7bff : 0); ga.material.emissiveIntensity = gb.material.emissiveIntensity = on ? 0.9 : 0; });
     clutchA.material.emissive.setHex(g % 2 === 1 ? 0x3d7bff : 0); clutchA.material.emissiveIntensity = 0.8; clutchB.material.emissive.setHex(g > 0 && g % 2 === 0 ? 0x3d7bff : 0); clutchB.material.emissiveIntensity = 0.8;
     trCase.material.opacity *= 1 - 0.94 * transCut; trInternals.forEach(m => m.opacity *= transCut); trCase.material.depthWrite = trCase.material.opacity > 0.5; trInternals.forEach(m => m.depthWrite = m.opacity > 0.5); if (transCut > 0.02) { trCaseEdge.visible = true; trCaseEdge.material.opacity = Math.max(trCaseEdge.material.opacity, transCut * 0.8 * mech * fade); }
@@ -383,8 +390,18 @@ export function createShowroom({ isMobile = false } = {}) {
   /** Replace the procedural block + internals with the loaded engine model (see engineModel.js). */
   const procEngine = [blockMesh, headMesh, camCover, ...cylBores, ...pistons, ...rods, ...throws, crank, camshaft, ...valves, exManifold];
   function useEngineModel(em) { procEngine.forEach(o => o.visible = false); engG.add(em.root); api.engineModel = em; pickMeshes.length = 0; car.traverse(o => { if (o.isMesh && o.userData.part) pickMeshes.push(o); }); }
+  /** Mount the accessory models (see partsModels.js); hides the procedural pieces they replace. */
+  function useParts(pm) {
+    turboG.visible = false; trG.visible = false; dsG.visible = false; mufflerBox.visible = false;
+    springs.slice(0, 2).forEach(o => o.visible = false); frontDampers.forEach(o => o.visible = false); discs.forEach(o => o.visible = false); calipers.forEach(o => o.visible = false);
+    const keyFor = { Transmission: 'trans', Driveshafts: 'susp', Suspension: 'susp', Exhaust: 'susp' };
+    for (const r of pm.roots) {
+      if (r.parent === 'engine') { engG.add(r.root); pm.turboMats = []; r.root.traverse(o => { if (o.isMesh) pm.turboMats.push(o.material); }); continue; }
+      car.add(r.root); const pt = new Part(r.part, r.root, V3(0, r.part === 'Transmission' ? 1.4 : -1.2, 0), 'mech'); pt.key = keyFor[r.part]; mechParts.push(pt); }
+    api.partModels = pm; pickMeshes.length = 0; car.traverse(o => { if (o.isMesh && o.userData.part) pickMeshes.push(o); });
+  }
   function dropEngineModel() { const em = api.engineModel; if (!em) return; engG.remove(em.root); procEngine.forEach(o => o.visible = true); api.engineModel = null; }
-  const api = { car, grid, roadG, parts, pickMeshes, update, mat, Part, edges, bootHighlight: false, glbWheels: null, lampHooks, useEngineModel, dropEngineModel, engineModel: null,
+  const api = { car, grid, roadG, parts, pickMeshes, update, mat, Part, edges, bootHighlight: false, glbWheels: null, lampHooks, useEngineModel, dropEngineModel, engineModel: null, useParts, partModels: null,
     /** Replace the procedural shell with parts built from a loaded model. */
     useShell(newParts, wheelSpinGroups, cabinParts, newSteerParts) { shell.visible = false; shellParts = newParts; api.glbWheels = wheelSpinGroups; if (cabinParts && cabinParts.length) { intG.visible = false; intParts = cabinParts; steerParts = newSteerParts || []; } pickMeshes.length = 0; car.traverse(o => { if (o.isMesh && o.userData.part) pickMeshes.push(o); }); },
     restoreShell() { shell.visible = true; intG.visible = true; shellParts = parts.filter(pt => pt.group === 'shell'); intParts = parts.filter(pt => pt.group === 'int'); steerParts = []; api.glbWheels = null; } };

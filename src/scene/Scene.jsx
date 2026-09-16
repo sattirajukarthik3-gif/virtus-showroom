@@ -21,7 +21,8 @@ import { buildShellFromGLTF } from './glbShell.js';
 import { buildEngine } from './engineModel.js';
 import { camTrack, evalTracks, asmOf, navRanges } from '../data/tracks.js';
 import { hotspots, dimLabels } from '../data/hotspots.js';
-import { MODEL, ENGINE } from '../data/modelConfig.js';
+import { MODEL, ENGINE, PARTS } from '../data/modelConfig.js';
+import { buildParts } from './partsModels.js';
 import { store, isMobile, reduced } from '../store.js';
 
 function Studio() {
@@ -74,11 +75,20 @@ function EngineModel({ api }) {
   return null;
 }
 
+/** Turbo, transaxle (gearbox / diff / axles / struts), brakes and muffler. */
+const partsCache = new WeakMap();
+function PartModels({ api }) {
+  const turbo = useLoader(ModelLoader, PARTS.turbo), transaxle = useLoader(ModelLoader, PARTS.transaxle), brake = useLoader(ModelLoader, PARTS.brake), exhaust = useLoader(ModelLoader, PARTS.exhaust);
+  const built = useMemo(() => { if (partsCache.has(transaxle)) return partsCache.get(transaxle); const b = buildParts({ turbo, transaxle, brake, exhaust }, api); partsCache.set(transaxle, b); return b; }, [turbo, transaxle, brake, exhaust, api]);
+  useEffect(() => { if (!api.partModels) api.useParts(built); }, [built, api]);
+  return null;
+}
+
 export default function Scene({ modelReady }) {
   const api = useMemo(() => createShowroom({ isMobile }), []);
   const fadeRef = useRef(1);
   const { camera, scene, gl } = useThree();
-  useEffect(() => { store.api = api; store.gl = gl; store.scene = scene; scene.fog = new THREE.FogExp2('#050609', 0.035); gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 0.95; }, [api, scene, gl]);
+  useEffect(() => { store.api = api; store.gl = gl; store.scene = scene; store.camera = camera; scene.fog = new THREE.FogExp2('#050609', 0.035); gl.toneMapping = THREE.ACESFilmicToneMapping; gl.toneMappingExposure = 0.95; }, [api, scene, gl]);
   const key = useRef(), sweep = useRef(), sweepT = useRef(), cabin = useRef();
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
   const pointer = useMemo(() => new THREE.Vector2(9, 9), []);
@@ -146,6 +156,7 @@ export default function Scene({ modelReady }) {
       <primitive object={api.roadG} />
       {modelReady && <Suspense fallback={null}><ModelShell api={api} /></Suspense>}
       {modelReady && <Suspense fallback={null}><EngineModel api={api} /></Suspense>}
+      {modelReady && <Suspense fallback={null}><PartModels api={api} /></Suspense>}
       {!isMobile && !reduced && (
         <EffectComposer multisampling={0}>
           <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.3} intensity={0.55} mipmapBlur />

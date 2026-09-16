@@ -17,6 +17,15 @@ export const ENGINE = {
   animSpeed: [0.25, 3.0],
 };
 
+const base = import.meta.env.VITE_MODEL_URL || 'models/virtus.glb';
+export const PARTS = { turbo: base.replace(/virtus\.(glb|json)$/, 'turbo.$1'), transaxle: base.replace(/virtus\.(glb|json)$/, 'gearbox.$1'), brake: base.replace(/virtus\.(glb|json)$/, 'brake.$1'), exhaust: base.replace(/virtus\.(glb|json)$/, 'exhaust.$1'),
+  credits: [
+    { title: 'Basic Turbo Charger', author: 'Angus Whitburn', url: 'https://sketchfab.com/3d-models/basic-turbo-charger-414dd8615bb24b798807fd187cedfe73' },
+    { title: 'Manual Transmission Gearbox With Differential', author: 'avredu', url: 'https://sketchfab.com/3d-models/manual-transmission-gearbox-with-differential-d48d46543d844857b31475e56f941410' },
+    { title: '6-Lug Brake Rotor and Brembo brake calipers', author: 'DRIVER-FIRE', url: 'https://sketchfab.com/3d-models/6-lug-brake-rotor-and-brembo-brake-calipers-ef37be6ddce44f49b6f616145c1e16af' },
+    { title: 'MUFFLER & EXHAUST', author: 'VR DESIGNER', url: 'https://sketchfab.com/3d-models/muffler-exhaust-8e7403032ecb4ea49c590b3dc4aa5ebc' },
+  ] };
+
 export const MODEL = {
   url: import.meta.env.VITE_MODEL_URL || 'models/virtus.glb',   // a .json URL is a base64-wrapped GLB (used where binary files can't be served)
   holoUrl: (import.meta.env.VITE_MODEL_URL || 'models/virtus.glb').replace(/virtus\.(glb|json)$/, 'virtus.holo.$1'),   // decimated copy used for the wireframe hologram
