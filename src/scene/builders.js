@@ -340,7 +340,7 @@ export function createShowroom({ isMobile = false } = {}) {
       if (pm.turboMats) pm.turboMats.forEach(m => { m.opacity = o; m.depthWrite = o > 0.5; });
       const wTurbo = dt * (5 + rpm * 90), wGear = dt * (1 + rpm * 6);
       pm.spin.forEach(p => { p.rotation[p.userData.axis] += (p.userData.dir || 1) * (p.userData.turbo ? wTurbo : wGear); });
-      const cur = g > 5 ? 5 : g; pm.gears.forEach(gr => { const on = gr.n === cur; gr.mesh.material.emissive.setHex(on ? 0x3d7bff : 0); gr.mesh.material.emissiveIntensity = on ? 0.9 : 0; });
+      const cur = Math.min(g, 5);   // the transaxle model carries five forward gear pairs pm.gears.forEach(gr => { const on = gr.n === cur; gr.mesh.material.emissive.setHex(on ? 0x3d7bff : 0); gr.mesh.material.emissiveIntensity = on ? 0.9 : 0; });
       pm.rotorPivots.forEach(p => p.rotation[p.userData.axis || 'z'] = anim.wheelA);
       pm.springs.forEach((p, i) => { p.scale.y = 1 - 0.2 * susp * (0.5 + 0.5 * Math.sin(t * 2.6 + i * 1.4)); }); }
     gearMeshes.forEach(([ga, gb], i) => { const [ra, rb] = gearR[i]; ga.rotation.z = anim.gearA; gb.rotation.z = -anim.gearA * ra / rb + Math.PI / Math.round(rb * 160); const on = i === g - 1; ga.material.emissive.setHex(on ? 0x3d7bff : 0); gb.material.emissive.setHex(on ? 0x3d7bff : 0); ga.material.emissiveIntensity = gb.material.emissiveIntensity = on ? 0.9 : 0; });
