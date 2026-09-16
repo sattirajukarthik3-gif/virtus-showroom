@@ -3,13 +3,18 @@
 /* Rigged crank/rod/piston assembly by david.gnzlv (Sketchfab, CC BY 4.0). Crank axis runs along +X in the file; pistons move along +Y.
    Scaled so the bore spacing (2.25 units) becomes 82 mm, which gives a 74 mm piston — a 1.5-litre four. */
 export const ENGINE = {
-  url: (import.meta.env.VITE_MODEL_URL || 'models/virtus.glb').replace(/virtus\.(glb|json)$/, 'engine.$1'),
-  credit: { title: 'Rigged 4-Cylinder Engine (FREE)', author: 'david.gnzlv', url: 'https://sketchfab.com/3d-models/rigged-4-cylinder-engine-free-e14ebe68273d49a3becda6802270b4b0', license: 'CC BY 4.0' },
-  scale: 0.082 / 2.25,
-  rotation: [0, Math.PI / 2, 0],      // crank axis X → engine-local Z (transverse)
-  crankCentre: [2.78, -2.92, 0],      // file units; lands on the procedural crank position
+  url: (import.meta.env.VITE_MODEL_URL || 'models/virtus.glb').replace(/virtus\.(glb|json)$/, 'engine.$1'),        // klaxoneer engine
+  rigUrl: (import.meta.env.VITE_MODEL_URL || 'models/virtus.glb').replace(/virtus\.(glb|json)$/, 'engine-rig.$1'), // david.gnzlv crank/rod/piston rig
+  credits: [
+    { title: 'Car Engine', author: 'klaxoneer', url: 'https://sketchfab.com/3d-models/car-engine-d440e8b6ec914b17b144a241ddbfa136', license: 'CC BY 4.0' },
+    { title: 'Rigged 4-Cylinder Engine (FREE)', author: 'david.gnzlv', url: 'https://sketchfab.com/3d-models/rigged-4-cylinder-engine-free-e14ebe68273d49a3becda6802270b4b0', license: 'CC BY 4.0' },
+  ],
   crankLocal: [0, -0.06, 0],          // engine-local position of the crank axis
-  animSpeed: [0.25, 3.0],             // playback rate at idle / full rpm
+  /* klaxoneer file: cylinders vertical, crank along Z, flywheel at -Z. Bore spacing 2.5 units = 82 mm. */
+  klax: { scale: 0.082 / 2.5 * 1.12, crank: [-0.18, -6.24], boreMidZ: -3.97, boreX: 0.3 },   // ×1.12: reads better against the bay
+  /* rig file: crank along X, pistons along Y. Stretched (x,y,z after rotation) to the klaxoneer bore spacing and crank-to-deck height. */
+  rig: { rotation: [0, Math.PI / 2, 0], crankCentre: [2.78, -2.92, 0], pistonMidX: 3.38, stretch: [1.03, 1.40, 1.111] },
+  animSpeed: [0.25, 3.0],
 };
 
 export const MODEL = {

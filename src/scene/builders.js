@@ -175,7 +175,7 @@ export function createShowroom({ isMobile = false } = {}) {
   const shroud = [radiator, fan, intercooler, airbox, intakePipe, chargePipe, manifold, coolantRes, exManifold, battery, turbine, compHouse];
 
   /* transmission */
-  const trG = new THREE.Group(); trG.position.set(1.42, 0.44, -0.42); car.add(trG);
+  const trG = new THREE.Group(); trG.position.set(1.42, 0.42, -0.44); trG.scale.setScalar(0.85); car.add(trG);
   const trCase = box(0.42, 0.34, 0.36, mat.cast, 0, 0, 0, true); trG.add(trCase);
   const gearMeshes = []; const shaftA = cyl(0.016, 0.016, 0.4, mat.steel, 10, 0, 0.07, 0); shaftA.rotation.x = Math.PI / 2; trG.add(shaftA);
   const shaftB = cyl(0.016, 0.016, 0.4, mat.steel, 10, 0, -0.07, 0); shaftB.rotation.x = Math.PI / 2; trG.add(shaftB);
@@ -329,7 +329,10 @@ export function createShowroom({ isMobile = false } = {}) {
     pistons.forEach((pm, i) => { const a = anim.crankA + ph[i]; const pinY = -0.06 + 0.035 * Math.cos(a), pinX = 0.035 * Math.sin(a); pm.position.y = 0.10 + 0.035 * Math.cos(a);
       const r = rods[i]; const dx = 0 - pinX, dy = (pm.position.y - 0.03) - pinY; const len = Math.hypot(dx, dy); r.position.set(pinX + dx / 2, pinY + dy / 2, EZ[i]); r.rotation.z = -Math.atan2(dx, dy); r.scale.y = len / 0.16; throws[i].rotation.z = a; });
     valves.forEach((v, i) => { v.position.y = 0.33 + 0.012 * Math.max(0, Math.sin(anim.crankA / 2 + i * 0.8)); }); camshaft.rotation.z = anim.crankA / 2;
-    if (api.engineRig) { const r = api.engineRig; const o = mech * fade * cut; r.root.visible = o > 0.01; r.mats.forEach(m => { m.opacity = o; m.depthWrite = o > 0.5; }); if (r.mixer && r.root.visible) r.mixer.update(dt * lerp(0.25, 3.0, rpm)); }
+    if (api.engineModel) { const em = api.engineModel; const o = mech * fade; em.root.visible = o > 0.01;
+      em.allMats.forEach(m => { m.opacity = o; m.depthWrite = o > 0.5; }); em.blockMats.forEach(m => { m.opacity = o * (1 - 0.88 * cut); m.depthWrite = m.opacity > 0.5; });
+      em.rigMats.forEach(m => { m.opacity = o; m.depthWrite = o > 0.5; });
+      if (em.root.visible) { if (em.mixer) em.mixer.update(dt * lerp(0.25, 3.0, rpm)); const w = dt * (2 + rpm * 30); em.spinners.forEach(p => p.rotation.z -= w); } }
     impeller.rotation.z -= dt * (5 + rpm * 90); turbine2.rotation.z -= dt * (5 + rpm * 90); fan.rotation.x += dt * (2 + rpm * 20);
     /* transmission */
     const gearChanged = g !== anim.lastGear; anim.lastGear = g; anim.gearA += dt * (1 + rpm * 6);
@@ -377,15 +380,11 @@ export function createShowroom({ isMobile = false } = {}) {
   const lampHooks = [];
   function shellWheels() { return api.glbWheels || wheels; }
 
-  /** Replace the box pistons/rods/crank with a loaded rig. root = normalised THREE.Group, mixer = THREE.AnimationMixer (or null). */
-  function useEngineRig(root, mixer, rigMats) {
-    [...pistons, ...rods, ...throws, crank, ...valves, camshaft].forEach(o => o.visible = false);
-    cylBores.forEach((b, i) => { b.position.set(0, 0.12, -0.123 + i * 0.082); b.scale.set(0.72, 1, 0.72); });
-    engG.add(root); api.engineRig = { root, mixer, mats: rigMats };
-    pickMeshes.length = 0; car.traverse(o => { if (o.isMesh && o.userData.part) pickMeshes.push(o); });
-  }
-  function dropEngineRig() { const r = api.engineRig; if (!r) return; engG.remove(r.root); [...pistons, ...rods, ...throws, crank, ...valves, camshaft].forEach(o => o.visible = true); api.engineRig = null; }
-  const api = { car, grid, roadG, parts, pickMeshes, update, mat, Part, edges, bootHighlight: false, glbWheels: null, lampHooks, useEngineRig, dropEngineRig, engineRig: null,
+  /** Replace the procedural block + internals with the loaded engine model (see engineModel.js). */
+  const procEngine = [blockMesh, headMesh, camCover, ...cylBores, ...pistons, ...rods, ...throws, crank, camshaft, ...valves, exManifold];
+  function useEngineModel(em) { procEngine.forEach(o => o.visible = false); engG.add(em.root); api.engineModel = em; pickMeshes.length = 0; car.traverse(o => { if (o.isMesh && o.userData.part) pickMeshes.push(o); }); }
+  function dropEngineModel() { const em = api.engineModel; if (!em) return; engG.remove(em.root); procEngine.forEach(o => o.visible = true); api.engineModel = null; }
+  const api = { car, grid, roadG, parts, pickMeshes, update, mat, Part, edges, bootHighlight: false, glbWheels: null, lampHooks, useEngineModel, dropEngineModel, engineModel: null,
     /** Replace the procedural shell with parts built from a loaded model. */
     useShell(newParts, wheelSpinGroups, cabinParts, newSteerParts) { shell.visible = false; shellParts = newParts; api.glbWheels = wheelSpinGroups; if (cabinParts && cabinParts.length) { intG.visible = false; intParts = cabinParts; steerParts = newSteerParts || []; } pickMeshes.length = 0; car.traverse(o => { if (o.isMesh && o.userData.part) pickMeshes.push(o); }); },
     restoreShell() { shell.visible = true; intG.visible = true; shellParts = parts.filter(pt => pt.group === 'shell'); intParts = parts.filter(pt => pt.group === 'int'); steerParts = []; api.glbWheels = null; } };

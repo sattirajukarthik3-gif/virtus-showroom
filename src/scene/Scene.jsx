@@ -18,6 +18,7 @@ class ModelLoader extends THREE.Loader {
 import { EffectComposer, Bloom, Vignette, Noise, SMAA } from '@react-three/postprocessing';
 import { createShowroom, clamp, lerp, smooth } from './builders.js';
 import { buildShellFromGLTF } from './glbShell.js';
+import { buildEngine } from './engineModel.js';
 import { camTrack, evalTracks, asmOf, navRanges } from '../data/tracks.js';
 import { hotspots, dimLabels } from '../data/hotspots.js';
 import { MODEL, ENGINE } from '../data/modelConfig.js';
@@ -63,22 +64,13 @@ function ModelShell({ api }) {
   return null;
 }
 
-/** Animated crank/rod/piston assembly placed inside the procedural block. */
-const rigCache = new WeakMap();
-function EngineRig({ api }) {
+/** Real engine (klaxoneer block + david.gnzlv reciprocating rig) replacing the procedural block. */
+const engineCache = new WeakMap();
+function EngineModel({ api }) {
   const gltf = useLoader(ModelLoader, ENGINE.url);
-  const built = useMemo(() => {
-    if (rigCache.has(gltf)) return rigCache.get(gltf);
-    const root = new THREE.Group(); const src = gltf.scene; root.add(src);
-    src.scale.setScalar(ENGINE.scale); src.rotation.set(...ENGINE.rotation); src.updateMatrixWorld(true);
-    /* put the crank axis on the procedural crank position */
-    const c = new THREE.Vector3(...ENGINE.crankCentre).multiplyScalar(ENGINE.scale).applyEuler(new THREE.Euler(...ENGINE.rotation));
-    src.position.set(ENGINE.crankLocal[0] - c.x, ENGINE.crankLocal[1] - c.y, ENGINE.crankLocal[2] - c.z);
-    const mats = []; src.traverse(o => { if (o.isMesh) { o.material = new THREE.MeshStandardMaterial({ color: 0xc9ced6, metalness: 0.9, roughness: 0.28, envMapIntensity: 0.7, transparent: true }); o.castShadow = true; o.userData.part = api.parts.find(p => p.name === 'Engine'); mats.push(o.material); } });
-    let mixer = null; if (gltf.animations && gltf.animations.length) { mixer = new THREE.AnimationMixer(src); const a = mixer.clipAction(gltf.animations[0]); a.setLoop(THREE.LoopRepeat, Infinity); a.play(); }
-    const out = { root, mixer, mats }; rigCache.set(gltf, out); return out;
-  }, [gltf, api]);
-  useEffect(() => { api.useEngineRig(built.root, built.mixer, built.mats); return () => api.dropEngineRig(); }, [built, api]);
+  const rig = useLoader(ModelLoader, ENGINE.rigUrl);
+  const built = useMemo(() => { if (engineCache.has(gltf)) return engineCache.get(gltf); const b = buildEngine(gltf, rig, api); engineCache.set(gltf, b); return b; }, [gltf, rig, api]);
+  useEffect(() => { api.useEngineModel(built); return () => api.dropEngineModel(); }, [built, api]);
   return null;
 }
 
@@ -153,7 +145,7 @@ export default function Scene({ modelReady }) {
       <primitive object={api.grid} />
       <primitive object={api.roadG} />
       {modelReady && <Suspense fallback={null}><ModelShell api={api} /></Suspense>}
-      {modelReady && <Suspense fallback={null}><EngineRig api={api} /></Suspense>}
+      {modelReady && <Suspense fallback={null}><EngineModel api={api} /></Suspense>}
       {!isMobile && !reduced && (
         <EffectComposer multisampling={0}>
           <Bloom luminanceThreshold={0.85} luminanceSmoothing={0.3} intensity={0.55} mipmapBlur />
