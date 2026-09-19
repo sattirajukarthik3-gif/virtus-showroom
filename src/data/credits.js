@@ -14,9 +14,7 @@ export const MODELS = {
 };
 
 export const AUDIO = [
-  { title: 'Rally Car Idle Loop 05', author: 'freesound_community', url: 'https://pixabay.com/sound-effects/city-rally-car-idle-loop-05-103801/', used: 'Engine idle' },
-  { title: 'Import car revs on Chassis Dyno with Turbo', author: 'freesound_community', url: 'https://pixabay.com/sound-effects/city-import-car-revs-on-chassis-dyno-with-turbo-66272/', used: 'Gear changes' },
-  { title: 'Turbo flutter', author: 'spinopel', url: 'https://pixabay.com/sound-effects/film-special-effects-turbo-flutter-336362/', used: 'Blow-off on upshifts' },
+  { title: 'Import car revs on Chassis Dyno with Turbo', author: 'freesound_community', url: 'https://pixabay.com/sound-effects/city-import-car-revs-on-chassis-dyno-with-turbo-66272/', used: 'Engine revs through the gears' },
 ];
 export const AUDIO_LICENSE = { name: 'Pixabay Content Licence', url: 'https://pixabay.com/service/license-summary/' };
 

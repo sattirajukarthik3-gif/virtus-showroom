@@ -42,7 +42,7 @@ All 3D assets are by independent artists on Sketchfab under [CC BY 4.0](https://
 | Front brake discs and calipers | [6- Lug Brake Rotor and Brembo brake calipers](https://sketchfab.com/3d-models/6-lug-brake-rotor-and-brembo-brake-calipers-ef37be6ddce44f49b6f616145c1e16af) | [DRIVER-FIRE](https://sketchfab.com/DRIVER-FIRE) |
 | Rear silencer and tailpipes | [MUFFLER & EXHAUST](https://sketchfab.com/3d-models/muffler-exhaust-8e7403032ecb4ea49c590b3dc4aa5ebc) | [VR DESIGNER](https://sketchfab.com/vr.designer_09) |
 
-Sounds (Pixabay Content Licence): [Rally Car Idle Loop 05](https://pixabay.com/sound-effects/city-rally-car-idle-loop-05-103801/) and [Import car revs on Chassis Dyno with Turbo](https://pixabay.com/sound-effects/city-import-car-revs-on-chassis-dyno-with-turbo-66272/) by freesound_community, [Turbo flutter](https://pixabay.com/sound-effects/film-special-effects-turbo-flutter-336362/) by spinopel.
+Sound (Pixabay Content Licence): [Import car revs on Chassis Dyno with Turbo](https://pixabay.com/sound-effects/city-import-car-revs-on-chassis-dyno-with-turbo-66272/) by freesound_community.
 
 Fonts: Barlow / Barlow Condensed (Jeremy Tribby) and IBM Plex Mono (IBM), SIL Open Font License. Volkswagen and Virtus are trademarks of Volkswagen AG; this is an unofficial fan project.
 
