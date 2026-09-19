@@ -115,7 +115,7 @@ export default function Scene({ modelReady }) {
     if (cabin.current) cabin.current.intensity = s.dash * 1.2;
     if (ev.gearChanged && store.sound) { if (s.load > 0) store.sound.shift(); else store.sound.click(); }
     if (!doorDone.current && p > 59.6 && p < 62) { doorDone.current = true; store.sound?.thud(); } if (p < 58) doorDone.current = false;
-    store.sound?.update(s.rpm, (p > 8 && p < 22) ? s.rpm : s.load * s.rpm * 0.6, s.load);
+    store.sound?.update(s.rpm, (p > 8 && p < 22) ? s.rpm : s.load * s.rpm * 0.6, s.load, p, dt);
     /* DOM: chapters, progress, nav, gears, hotspots, dims */
     const dom = store.dom; if (dom.fade[0] && !dom.fade[0].el.isConnected && dom.recollect) dom.recollect();
     for (const f of dom.fade) { const w = Math.min(0.7, (f.b - f.a) * 0.28); const fi = f.a <= 0 ? 1 : smooth(p, f.a, f.a + w), fo = f.b >= 100 ? 1 : 1 - smooth(p, f.b - w, f.b); const o = fi * fo; f.el.style.opacity = o; f.el.style.visibility = o > 0.01 ? '' : 'hidden'; if (f.move) f.el.style.transform = 'translateY(' + ((1 - o) * 24) + 'px)'; }

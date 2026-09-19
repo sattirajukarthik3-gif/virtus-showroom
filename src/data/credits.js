@@ -13,6 +13,13 @@ export const MODELS = {
   exhaust: { title: 'MUFFLER & EXHAUST', author: 'VR DESIGNER', authorUrl: 'https://sketchfab.com/vr.designer_09', url: 'https://sketchfab.com/3d-models/muffler-exhaust-8e7403032ecb4ea49c590b3dc4aa5ebc', used: 'Rear silencer and tailpipes' },
 };
 
+export const AUDIO = [
+  { title: 'Rally Car Idle Loop 05', author: 'freesound_community', url: 'https://pixabay.com/sound-effects/city-rally-car-idle-loop-05-103801/', used: 'Engine idle' },
+  { title: 'Import car revs on Chassis Dyno with Turbo', author: 'freesound_community', url: 'https://pixabay.com/sound-effects/city-import-car-revs-on-chassis-dyno-with-turbo-66272/', used: 'Gear changes' },
+  { title: 'Turbo flutter', author: 'spinopel', url: 'https://pixabay.com/sound-effects/film-special-effects-turbo-flutter-336362/', used: 'Blow-off on upshifts' },
+];
+export const AUDIO_LICENSE = { name: 'Pixabay Content Licence', url: 'https://pixabay.com/service/license-summary/' };
+
 export const OTHER = [
   { title: 'Barlow & Barlow Condensed', author: 'Jeremy Tribby', url: 'https://fonts.google.com/specimen/Barlow', license: 'SIL Open Font License' },
   { title: 'IBM Plex Mono', author: 'IBM', url: 'https://fonts.google.com/specimen/IBM+Plex+Mono', license: 'SIL Open Font License' },
@@ -23,5 +30,6 @@ export const OTHER = [
 export const creditLine = keys => keys.map(k => MODELS[k]).map(m => `“${m.title}” by ${m.author}`).join(' · ') + ` — Sketchfab, ${LICENSE.name}`;
 /** HTML list with links (spec wall + credits panel). */
 export const creditsHtml = () => Object.values(MODELS).map(m => `<dt>${m.used}</dt><dd><a href="${m.url}" target="_blank" rel="noopener">${m.title}</a> by <a href="${m.authorUrl}" target="_blank" rel="noopener">${m.author}</a><i>${LICENSE.name}</i></dd>`).join('')
+  + AUDIO.map(a => `<dt>Sound · ${a.used}</dt><dd><a href="${a.url}" target="_blank" rel="noopener">${a.title}</a> by ${a.author}<i>${AUDIO_LICENSE.name}</i></dd>`).join('')
   + OTHER.map(o => `<dt>${o.title}</dt><dd><a href="${o.url}" target="_blank" rel="noopener">${o.author}</a><i>${o.license}</i></dd>`).join('');
 export const creditsCompact = () => Object.values(MODELS).map(m => `${m.title} — ${m.author}`).join(' · ');

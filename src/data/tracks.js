@@ -42,7 +42,7 @@ export const tracks = {
   intVis: track([[0, 0], [57.5, 0], [58.4, 1], [70.6, 1], [71.5, 0.4], [78, 0.4], [78.8, 0], [91.9, 0], [92, 1]]),
   cut: track([[15, 0], [16.5, 1], [22, 1], [23.5, 0]]),
   rpm: track([[8, 0], [10, 0.5], [15, 0.7], [22, 0.6], [29, 0.8], [35, 0.5], [48, 0], [92, 0], [96, 0.3]]),
-  gear: track([[22, 0], [23, 1], [24, 2], [25, 3], [26, 4], [27, 5], [28.2, 6]], true),
+  gear: track([[22, 0], [23.2, 1], [24.3, 2], [25.5, 3], [26.4, 4], [27.1, 5], [28.5, 6]], true),
   transCut: track([[22, 0], [23, 1], [35, 1], [36, 0]]),
   flow: track([[29, 0], [35, 1]]), flowOn: track([[28.5, 0], [29.5, 1], [34.5, 1], [35.5, 0]]),
   susp: track([[35, 0], [36, 1], [42, 1], [43, 0]]), brake: track([[38.5, 0], [40, 1], [42, 1], [42.5, 0]]),
@@ -70,7 +70,7 @@ export const asmTracks = {
 
 /* Gear-change beat (22–29.5 %): each gear is its own rev cycle — revs climb through the gear, drop at the shift, climb again.
    Returns { rev 0..1, load 0..1 } where load grows with the gear so each one peaks louder than the last. */
-const GEAR_EDGES = [22, 23, 24, 25, 26, 27, 28.2, 29.5];
+const GEAR_EDGES = [22, 23.2, 24.3, 25.5, 26.4, 27.1, 28.5, 29.5];   // aligned with the shifts in audio/dyno.mp3
 export function gearRev(p) {
   if (p <= GEAR_EDGES[0] || p >= GEAR_EDGES[GEAR_EDGES.length - 1]) return { rev: 0, load: 0 };
   let i = 0; while (i < GEAR_EDGES.length - 2 && p >= GEAR_EDGES[i + 1]) i++;
