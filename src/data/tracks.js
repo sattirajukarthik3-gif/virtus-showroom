@@ -68,7 +68,17 @@ export const asmTracks = {
   susp: track([[91.99, 1], [92, 0], [93.7, 0], [94.5, 1]]), interior: track([[91.99, 1], [92, 0], [94.3, 0], [95.1, 1]]),
 };
 
-export function evalTracks(p) { const s = { p }; for (const k in tracks) s[k] = tracks[k](p); return s; }
+/* Gear-change beat (22–29.5 %): each gear is its own rev cycle — revs climb through the gear, drop at the shift, climb again.
+   Returns { rev 0..1, load 0..1 } where load grows with the gear so each one peaks louder than the last. */
+const GEAR_EDGES = [22, 23, 24, 25, 26, 27, 28.2, 29.5];
+export function gearRev(p) {
+  if (p <= GEAR_EDGES[0] || p >= GEAR_EDGES[GEAR_EDGES.length - 1]) return { rev: 0, load: 0 };
+  let i = 0; while (i < GEAR_EDGES.length - 2 && p >= GEAR_EDGES[i + 1]) i++;
+  const f = (p - GEAR_EDGES[i]) / (GEAR_EDGES[i + 1] - GEAR_EDGES[i]);
+  const ramp = 1 - Math.pow(1 - f, 2);                       // fast rise, easing off toward the redline
+  return { rev: i === 0 ? 0.25 + 0.25 * ramp : 0.3 + 0.68 * ramp, load: i === 0 ? 0.2 : 0.45 + 0.55 * (i / 6) };
+}
+export function evalTracks(p) { const s = { p }; for (const k in tracks) s[k] = tracks[k](p); const g = gearRev(p); if (g.rev > 0) s.rpm = g.rev; s.load = g.load; return s; }
 export const asmOf = p => key => (asmTracks[key] ? asmTracks[key](p) : 1);
 
 export const navItems = [['Virtus', 0], ['Engine', 8.4], ['Drivetrain', 22.4], ['Chassis', 35.4], ['Exterior', 48.4], ['Interior', 58.4], ['Safety', 70.4], ['Dimensions', 79.5], ['Specs', 85.4]];
