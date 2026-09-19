@@ -69,6 +69,8 @@ p{max-width:44ch;color:var(--ink-2);font-weight:300;font-size:clamp(14px,1.15vw,
 .wall dt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
 .wall dd{margin:1px 0 0;color:var(--ink);font-variant-numeric:tabular-nums}
 .wall dd i{font-style:normal;color:var(--blue-2);font-family:var(--mono);font-size:10px;margin-left:6px;letter-spacing:.08em}
+.wall section.credits{grid-column:1/-1}
+.wall section.credits dl{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px 24px}
 .wall-note{grid-column:1/-1;background:var(--panel);padding:12px 20px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.04em}
 /* ---------- hotspots ---------- */
 #hs{position:fixed;inset:0;z-index:5;pointer-events:none}
@@ -91,6 +93,9 @@ p{max-width:44ch;color:var(--ink-2);font-weight:300;font-size:clamp(14px,1.15vw,
 #panel .close{position:absolute;top:18px;right:18px;z-index:1;background:none;border:1px solid var(--line);color:var(--ink);width:34px;height:34px;cursor:pointer;font-size:16px}
 #panel .data{margin-top:24px}
 #panel .note{margin-top:22px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;line-height:1.6}
+#panel .note.credit{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+#panel .data a,.wall dd a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
+#panel .data a:hover,.wall dd a:hover{border-color:var(--blue)}
 /* ---------- nav / chrome ---------- */
 #prog{position:fixed;top:0;left:0;height:2px;width:100%;z-index:9;background:rgba(255,255,255,.06)}
 #prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--blue-2))}

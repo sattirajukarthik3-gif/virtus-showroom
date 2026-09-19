@@ -2,6 +2,7 @@ import React from 'react';
 import { navItems } from '../data/tracks.js';
 import { store, useUI, goTo } from '../store.js';
 import { createSound } from '../scene/sound.js';
+import { creditsHtml, LICENSE } from '../data/credits.js';
 
 export function Nav() {
   return (
@@ -25,6 +26,7 @@ export function Tools() {
         <button onClick={toggleSound} className={ui.soundOn ? 'on' : ''} aria-pressed={ui.soundOn}>{ui.soundOn ? '🔊 Sound on' : '🔇 Sound off'}</button>
         <button onClick={reset} title="Reset camera">Reset view</button>
         <button onClick={full} title="Fullscreen">Fullscreen</button>
+        <button onClick={() => store.setUI({ selected: { id: 'credits', eyebrow: 'Attribution', title: 'Credits', desc: 'Every 3D asset on this site is the work of an independent artist, shared under ' + LICENSE.name + '. Volkswagen and Virtus are trademarks of Volkswagen AG; this is an unofficial fan project.', html: creditsHtml(), data: [] } })} title="Credits">Credits</button>
       </div>
       <div id="hint"><b>Scroll</b> to move the camera · click a <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: 'var(--blue-2)' }} /> hotspot</div>
       {ui.model !== 'glb' && <div id="modelnote">{ui.model === 'checking' ? 'Checking for model…' : <>Procedural stand-in · drop <b>public/models/virtus.glb</b> for the real car</>}</div>}

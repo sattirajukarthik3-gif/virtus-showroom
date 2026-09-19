@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { store, useUI } from '../store.js';
+import { creditFor } from '../data/hotspots.js';
 
 export default function Panel() {
   const ui = useUI(); const h = ui.selected;
@@ -12,8 +13,9 @@ export default function Panel() {
         <div className="eyebrow">{h.eyebrow}</div>
         <h3>{h.title}</h3>
         <p>{h.desc}</p>
-        <dl className="data">{h.data.map(([k, v]) => <React.Fragment key={k}><dt>{k}</dt><dd>{v}</dd></React.Fragment>)}</dl>
+        {h.html ? <dl className="data" dangerouslySetInnerHTML={{ __html: h.html }} /> : <dl className="data">{h.data.map(([k, v]) => <React.Fragment key={k}><dt>{k}</dt><dd>{v}</dd></React.Fragment>)}</dl>}
         {h.note && <div className="note">{h.note}</div>}
+        {!h.html && <div className="note credit">3D model: {creditFor(h.id)}</div>}
       </>}
     </aside>
   );

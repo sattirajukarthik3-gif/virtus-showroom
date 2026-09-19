@@ -30,4 +30,19 @@ The scene renders a procedural stand-in until a model exists at `public/models/v
 Pushing to `main` builds the site and publishes `dist/` to GitHub Pages via `.github/workflows/deploy.yml`.
 
 ## Credits
-3D model: ["2022 Volkswagen Virtus GT"](https://sketchfab.com/3d-models/2022-volkswagen-virtus-gt-3955e5c050f843398b49b2b21ab2f232) by [BHP3D](https://sketchfab.com/BHP3D), licensed under [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/). Engine: ["Car Engine"](https://sketchfab.com/3d-models/car-engine-d440e8b6ec914b17b144a241ddbfa136) by [klaxoneer](https://sketchfab.com/klaxoneer), CC BY 4.0. Engine internals: ["Rigged 4-Cylinder Engine (FREE)"](https://sketchfab.com/3d-models/rigged-4-cylinder-engine-free-e14ebe68273d49a3becda6802270b4b0) by [david.gnzlv](https://sketchfab.com/david.gnzlv), CC BY 4.0. Accessories: ["Basic Turbo Charger"](https://sketchfab.com/3d-models/basic-turbo-charger-414dd8615bb24b798807fd187cedfe73) by Angus Whitburn, ["Manual Transmission Gearbox With Differential"](https://sketchfab.com/3d-models/manual-transmission-gearbox-with-differential-d48d46543d844857b31475e56f941410) by avredu, ["6-Lug Brake Rotor and Brembo brake calipers"](https://sketchfab.com/3d-models/6-lug-brake-rotor-and-brembo-brake-calipers-ef37be6ddce44f49b6f616145c1e16af) by DRIVER-FIRE, ["MUFFLER & EXHAUST"](https://sketchfab.com/3d-models/muffler-exhaust-8e7403032ecb4ea49c590b3dc4aa5ebc) by VR DESIGNER — all CC BY 4.0. Volkswagen and Virtus are trademarks of Volkswagen AG; this is an unofficial fan project.
+All 3D assets are by independent artists on Sketchfab under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Attribution appears on the site (Credits button, spec wall, finale and each component's panel) and here:
+
+| Used for | Model | Author |
+|---|---|---|
+| Body, glass, lights, wheels, cabin | [2022 Volkswagen Virtus GT](https://sketchfab.com/3d-models/2022-volkswagen-virtus-gt-3955e5c050f843398b49b2b21ab2f232) | [BHP3D](https://sketchfab.com/BHP3D) |
+| Engine block, head, valvetrain, timing chain, flywheel | [Car Engine](https://sketchfab.com/3d-models/car-engine-d440e8b6ec914b17b144a241ddbfa136) | [klaxoneer](https://sketchfab.com/klaxoneer) |
+| Animated crank, rods, pistons | [Rigged 4-Cylinder Engine (FREE)](https://sketchfab.com/3d-models/rigged-4-cylinder-engine-free-e14ebe68273d49a3becda6802270b4b0) | [david.gnzlv](https://sketchfab.com/david.gnzlv) |
+| Turbocharger | [Basic Turbo Charger](https://sketchfab.com/3d-models/basic-turbo-charger-414dd8615bb24b798807fd187cedfe73) | [Angus Whitburn](https://sketchfab.com/AngusWhitburn) |
+| Gear cluster, differential, driveshafts, front struts | [Manual Transmission Gearbox With Differential](https://sketchfab.com/3d-models/manual-transmission-gearbox-with-differential-d48d46543d844857b31475e56f941410) | [avredu](https://sketchfab.com/avredu) |
+| Front brake discs and calipers | [6- Lug Brake Rotor and Brembo brake calipers](https://sketchfab.com/3d-models/6-lug-brake-rotor-and-brembo-brake-calipers-ef37be6ddce44f49b6f616145c1e16af) | [DRIVER-FIRE](https://sketchfab.com/DRIVER-FIRE) |
+| Rear silencer and tailpipes | [MUFFLER & EXHAUST](https://sketchfab.com/3d-models/muffler-exhaust-8e7403032ecb4ea49c590b3dc4aa5ebc) | [VR DESIGNER](https://sketchfab.com/vr.designer_09) |
+
+Fonts: Barlow / Barlow Condensed (Jeremy Tribby) and IBM Plex Mono (IBM), SIL Open Font License. Volkswagen and Virtus are trademarks of Volkswagen AG; this is an unofficial fan project.
+
+## Content
+Specifications reflect the India-spec 2026 Virtus (11 variants, ₹10.71–19.20 lakh ex-showroom; 6 airbags standard; 205/55 R16 on all trims) as of September 2026. The 1.5 TSI GT Plus is the variant shown. Figures Volkswagen India does not publish (0–100 km/h, top speed) are marked “verify” on the site. A facelift with ADAS was spotted testing in April 2026 and had not launched at time of writing.
