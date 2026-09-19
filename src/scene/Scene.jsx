@@ -113,7 +113,7 @@ export default function Scene({ modelReady }) {
     const ev = api.update(s, dt, t, camera, asmOf(p));
     if (sweep.current) { sweep.current.intensity = s.sweep * 40; sweep.current.position.set(lerp(-7, 7, s.hero), 4.5, 5); sweepT.current.position.set(lerp(-3, 3, s.hero), 0.5, 0); }
     if (cabin.current) cabin.current.intensity = s.dash * 1.2;
-    if (ev.gearChanged && store.sound) store.sound.click();
+    if (ev.gearChanged && store.sound) { if (s.load > 0) store.sound.shift(); else store.sound.click(); }
     if (!doorDone.current && p > 59.6 && p < 62) { doorDone.current = true; store.sound?.thud(); } if (p < 58) doorDone.current = false;
     store.sound?.update(s.rpm, (p > 8 && p < 22) ? s.rpm : s.load * s.rpm * 0.6, s.load);
     /* DOM: chapters, progress, nav, gears, hotspots, dims */
